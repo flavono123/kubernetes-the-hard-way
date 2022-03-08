@@ -1,0 +1,6 @@
+pre-commit:
+  commands:
+    ansible:
+      tags: test
+      run: ansible-playbook -i provisioning/cluster1_nodes provisioning/cluster-nodes.yaml --check
+
