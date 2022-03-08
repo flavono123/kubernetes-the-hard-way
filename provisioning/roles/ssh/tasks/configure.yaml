@@ -1,0 +1,67 @@
+---
+- name: Check the ssh key exists
+  stat:
+    path: /home/vagrant/.ssh/id_ssh_rsa
+  register: key_stat
+
+- name: Generate the ssh key and add to authorized_keys
+  block:
+  - name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
+    community.crypto.openssh_keypair:
+      state: present
+      path: /tmp/id_ssh_rsa
+    register: ssh_result
+
+  - name: Copy the private key to the vagrant's ssh directory
+    copy:
+      src: /tmp/id_ssh_rsa
+      dest: /home/vagrant/.ssh/id_ssh_rsa
+      remote_src: yes
+      mode: "0600"
+    ignore_errors: "{{ ansible_check_mode }}"
+
+  - name: Copy the public key to the vagrant's ssh directory
+    copy:
+      src: /tmp/id_ssh_rsa.pub
+      dest: /home/vagrant/.ssh/id_ssh_rsa.pub
+      remote_src: yes
+      mode: "0644"
+    ignore_errors: "{{ ansible_check_mode }}"
+
+  - name: Delete the temp files
+    file:
+      state: absent
+      path: "/tmp/{{ item }}"
+    with_items:
+    - id_ssh_rsa
+    - id_ssh_rsa.pub
+
+  - name: Collect the public keys
+    set_fact:
+      pubkeys: "{{ ansible_play_hosts | map('extract', hostvars, 'ssh_result') | list | map(attribute='public_key') | list }}"
+
+  - name: Copy the authorized_keys
+    blockinfile:
+      state: present
+      marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item[1] }}"
+      block: "{{ item[0] }} {{ item[1] }}"
+      path: /home/vagrant/.ssh/authorized_keys
+    loop: "{{ pubkeys | zip(ansible_play_hosts) }}"
+
+  when:
+  - not key_stat.stat.exists
+
+- name: Touch the ssh config file
+  file:
+    state: touch
+    path: /home/vagrant/.ssh/config
+    mode: "0644"
+
+- name: Set the ssh config
+  blockinfile:
+    state: present
+    block: |
+      Host cluster*
+        IdentityFile /home/vagrant/.ssh/id_ssh_rsa
+        StrictHostKeyChecking no
+    path: /home/vagrant/.ssh/config

@@ -1,3 +1,4 @@
 - hosts: cluster1_nodes
   roles:
   - dns
+  - ssh
