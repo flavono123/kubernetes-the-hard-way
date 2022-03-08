@@ -45,7 +45,7 @@
 
 - name: Collect the public keys
   set_fact:
-    new_pubkey_and_hosts: "{{ new_key_hosts | map('extract', hostvars, 'ssh_result') | list | map(attribute='public_key') | zip(new_key_hosts) }}"
+    new_pubkey_and_hosts: "{{ new_key_hosts | map('extract', hostvars, ['ssh_result', 'public_key']) | zip(new_key_hosts) }}"
 
 - name: Add the new keys to authorized_keys
   blockinfile:
