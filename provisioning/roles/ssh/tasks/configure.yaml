@@ -60,6 +60,8 @@
     state: touch
     path: /home/vagrant/.ssh/config
     mode: "0644"
+    access_time: preserve
+    modification_time: preserve
 
 - name: Set the ssh config
   blockinfile:
