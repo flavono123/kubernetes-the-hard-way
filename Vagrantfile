@@ -39,8 +39,8 @@ Vagrant.configure("2") do |config|
 
     # All VMs are up, after cluster1-worker2 is up, provisioning the entire VMs at once
     worker.vm.provision "ansible" do |ansible|
-      ansible.playbook = "provisioning/cluster1-nodes.yaml"
-      ansible.inventory_path = "provisioning/inventory.yaml"
+      ansible.playbook = "provisioning/cluster-nodes.yaml"
+      ansible.inventory_path = "provisioning/cluster1-nodes"
       ansible.limit = "all"
     end
   end
