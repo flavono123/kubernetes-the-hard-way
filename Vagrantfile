@@ -37,8 +37,9 @@ Vagrant.configure("2") do |config|
     worker.vm.network :private_network, ip: "192.168.1.3"
     worker.vm.network :forwarded_port, guest: 22, host: 2224, id: "ssh"  
 
+    # All VMs are up, after cluster1-worker2 is up, provisioning the entire VMs at once
     worker.vm.provision "ansible" do |ansible|
-      ansible.playbook = "provisioning/playbooks/setup-dns.yaml"
+      ansible.playbook = "provisioning/cluster1-nodes.yaml"
       ansible.inventory_path = "provisioning/inventory.yaml"
       ansible.limit = "all"
     end
