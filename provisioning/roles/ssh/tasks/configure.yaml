@@ -4,7 +4,7 @@
     path: /home/vagrant/.ssh/id_ssh_rsa
   register: key_stat
 
-- name: Generate the ssh key and add to authorized_keys
+- name: Generate the ssh key
   block:
   - name: Generate an OpenSSH keypair with the default values (4096 bits, rsa)
     community.crypto.openssh_keypair:
@@ -36,20 +36,24 @@
     - id_ssh_rsa
     - id_ssh_rsa.pub
 
-  - name: Collect the public keys
-    set_fact:
-      pubkeys: "{{ ansible_play_hosts | map('extract', hostvars, 'ssh_result') | list | map(attribute='public_key') | list }}"
-
-  - name: Copy the authorized_keys
-    blockinfile:
-      state: present
-      marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item[1] }}"
-      block: "{{ item[0] }} {{ item[1] }}"
-      path: /home/vagrant/.ssh/authorized_keys
-    loop: "{{ pubkeys | zip(ansible_play_hosts) }}"
-
   when:
   - not key_stat.stat.exists
+
+- name: Collect the hosts generating the new key
+  set_fact:
+    new_key_hosts: "{{ ansible_play_hosts | map('extract', hostvars, ['key_stat', 'stat', 'exists']) | zip(ansible_play_hosts) | rejectattr('0') | map(attribute='1') }}"
+
+- name: Collect the public keys
+  set_fact:
+    new_pubkey_and_hosts: "{{ new_key_hosts | map('extract', hostvars, 'ssh_result') | list | map(attribute='public_key') | zip(new_key_hosts) }}"
+
+- name: Add the new keys to authorized_keys
+  blockinfile:
+    state: present
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item[1] }}"
+    block: "{{ item[0] }} {{ item[1] }}"
+    path: /home/vagrant/.ssh/authorized_keys
+  loop: "{{ new_pubkey_and_hosts }}"
 
 - name: Touch the ssh config file
   file:
