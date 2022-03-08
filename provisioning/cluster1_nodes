@@ -1,4 +1,4 @@
-[cluster1-nodes]
+[cluster1_nodes]
 cluster1-master1
 cluster1-worker1
 cluster1-worker2

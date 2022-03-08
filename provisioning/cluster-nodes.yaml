@@ -1,3 +1,3 @@
-- hosts: cluster1-nodes
+- hosts: cluster1_nodes
   roles:
   - dns
