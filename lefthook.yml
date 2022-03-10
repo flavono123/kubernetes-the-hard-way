@@ -1,6 +1,10 @@
 pre-commit:
+  parallel: true
   commands:
     ansible:
       tags: test
       run: ansible-playbook -i provisioning/cluster1_nodes provisioning/cluster-nodes.yaml --check
+    rubocop:
+      tags: lint
+      run: bundle exec rubocop --auto-correct
 
