@@ -1,8 +1,10 @@
 - name: Create the module file for containerd
   become: yes
   file:
-    state: file
+    state: touch
     path: /etc/modules-load.d/containerd.conf
+    access_time: preserve
+    modification_time: preserve
 
 - name: Configure containerd module
   become: yes
@@ -72,3 +74,6 @@
   notify: restart containerd
   vars:
     config: "{{ containerd_config }}"
+
+- name: Flush handlers for restart containerd
+  meta: flush_handlers
