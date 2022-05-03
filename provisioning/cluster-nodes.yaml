@@ -2,3 +2,4 @@
   roles:
   - dns
   - ssh
+  - kubernetes

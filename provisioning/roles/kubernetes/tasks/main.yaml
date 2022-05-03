@@ -1,0 +1,7 @@
+---
+- import_tasks: swapoff.yaml
+  tags:
+  - kubernetes/swapoff
+- import_tasks: containerd.yaml
+  tags:
+  - kubernetes/containerd

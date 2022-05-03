@@ -1,0 +1,9 @@
+---
+containerd_systemd_cgroup_driver:
+  plugins:
+    io.containerd.grpc.v1.cri:
+      containerd:
+        runtimes:
+          runc:
+            options:
+              SystemdCgroup: true

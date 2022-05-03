@@ -1,0 +1,74 @@
+- name: Create the module file for containerd
+  become: yes
+  file:
+    state: file
+    path: /etc/modules-load.d/containerd.conf
+
+- name: Configure containerd module
+  become: yes
+  blockinfile:
+    insertafter: EOF
+    path: /etc/modules-load.d/containerd.conf
+    block: |
+      overlay
+      br_netfilter
+
+- name: Add modules overlay and br_netfilter
+  become: yes
+  command: "modprobe {{ item }}"
+  with_items:
+  - overlay
+  - br_netfilter
+
+- name: Setup required sysctl net params
+  become: yes
+  sysctl:
+    state: present
+    name: "net.{{ item }}"
+    value: 1
+    sysctl_file: /etc/sysctl.d/99-kubernetes-cri.conf
+  with_items:
+  - bridge.bridge-nf-call-iptables
+  - ipv4.ip_forward
+  - bridge.bridge-nf-call-ip6tables
+
+- name: Add Docker GPG key
+  become: yes
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+- name: Configure Docker's upstream APT repository
+  become: yes
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    update_cache: true
+
+- name: Install containerd
+  become: yes
+  apt:
+    state: present
+    update_cache: yes
+    name:
+    - containerd.io
+
+- name: Get containerd default configurations
+  become: yes
+  command: containerd config default
+  register: containerd_default_config
+  run_once: yes
+
+- set_fact:
+    containerd_config: "{{ containerd_default_config.stdout | from_toml | combine(containerd_systemd_cgroup_driver, recursive=True) }}"
+
+- name: Template the containerd configuration
+  become: yes
+  template:
+    src: containerd_config.toml
+    dest: /etc/containerd/config.toml
+    mode: '0644'
+    owner: root
+    group: root
+  notify: restart containerd
+  vars:
+    config: "{{ containerd_config }}"

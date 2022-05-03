@@ -1,0 +1,10 @@
+- name: Disable swap
+  become: yes
+  command: swapoff -a
+
+- name: Remove swapfile from /etc/fstab
+  become: yes
+  mount:
+    state: absent
+    name: swap
+    fstype: swp
