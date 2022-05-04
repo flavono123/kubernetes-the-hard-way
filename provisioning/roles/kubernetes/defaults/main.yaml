@@ -1,4 +1,5 @@
 ---
+# containerd
 containerd_systemd_cgroup_driver:
   plugins:
     io.containerd.grpc.v1.cri:
@@ -7,3 +8,6 @@ containerd_systemd_cgroup_driver:
           runc:
             options:
               SystemdCgroup: true
+
+# kubeadm
+kube_version: 1.23.6

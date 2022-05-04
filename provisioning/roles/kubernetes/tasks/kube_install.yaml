@@ -1,0 +1,23 @@
+- name: Add Google Cloud GPG key
+  become: yes
+  apt_key:
+    state: present
+    keyring: /usr/share/keyrings/kubernetes-archive-keyring.gpg
+    url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+
+- name: Add the Kubernetes APT repository
+  become: yes
+  apt_repository:
+    state: present
+    update_cache: yes
+    filename: kubernetes.list
+    repo: "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"
+
+- name: Install kubeadm, kubelet and kubectl
+  become: yes
+  apt:
+    state: present
+    name:
+    - "kubeadm={{ kube_version }}-00"
+    - "kubelet={{ kube_version }}-00"
+    - "kubectl={{ kube_version }}-00"
