@@ -1,0 +1,70 @@
+- name: Reset kubeadm cluster
+  become: yes
+  block:
+  - name: Drain nodes
+    command: "kubectl drain {{ item }} --delete-emptydir-data --force --ignore-daemonsets"
+    with_items: "{{ groups.nodes }}"
+    when: "'controlplane' in group_names"
+
+  - name: Reset nodes
+    command: "kubeadm reset -f"
+    when: "'nodes' in group_names"
+
+  - name: Reset iptables rules
+    shell: "iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X"
+    when: "'nodes' in group_names"
+
+  - name: Delete nodes
+    command: "kubectl delete node {{ item }}"
+    with_items: "{{ groups.nodes }}"
+    when: "'controlplane' in group_names"
+
+  - name: Reset controlplane
+    command: "kubeadm reset -f"
+    when: "'controlplane' in group_names"
+  tags:
+  - kubernetes/kubeadm/reset
+
+- name: Set kubeadm cluster
+  become: yes
+  block:
+    #- name: Check kube-apiserver running
+    #  become: yes
+    #  wait_for:
+    #    port: 6443
+    #    timeout: 10
+    #    msg: "kube-apiserver is not running"
+    #  register: kube_apiserver_port_result
+    #  ignore_errors: yes
+
+  - name: Initialize kubeadm in controlplane
+    command: "kubeadm init --control-plane-endpoint={{ ansible_hostname }}:6443 --apiserver-cert-extra-sans={{ ansible_hostname }}"
+    register: kubeadm_init_result
+    until: kubeadm_init_result.stdout.find("Your Kubernetes control-plane has initialized successfully!")
+    delay: 120
+    retries: 1
+    ignore_errors: "{{ ansible_check_mode }}"
+    when: "'controlplane' in group_names"
+
+  - name: Make directory for kube-config
+    file:
+      state: directory
+      path: $HOME/.kube
+
+  - name: Copy admin kube-config for root
+    command: cp /etc/kubernetes/admin.conf $HOME/.kube/config
+    when: "'controlplane' in group_names"
+
+  - name: Create token for nodes
+    command: "kubeadm token create --print-join-command --ttl 0"
+    register: join_command
+    delegate_to: "{{ groups.controlplane[0] }}"
+    when: "'nodes' in group_names"
+
+  - name: Join nodes to the cluster
+    command: "{{ hostvars[inventory_hostname].join_command.stdout | trim }}"
+    when:
+    - "'nodes' in group_names"
+    - join_command.stdout != ""
+  tags:
+  - kubernetes/kubeadm/set
