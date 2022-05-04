@@ -15,3 +15,8 @@
   tags:
   - kubernetes
   - kubernetes/kubeadm
+- import_tasks: helm.yaml
+  tags:
+  - kubernetes
+  - kubernetes/helm
+  when: "'controlplane' in group_names"

@@ -1,0 +1,19 @@
+- name: Add Helm GPG key
+  become: yes
+  apt_key:
+    state: present
+    url: https://baltocdn.com/helm/signing.asc
+
+- name: Add Helm APT repository
+  become: yes
+  apt_repository:
+    update_cache: yes
+    repo: "deb https://baltocdn.com/helm/stable/debian/ all main"
+
+- name: Install Helm
+  become: yes
+  apt:
+    state: present
+    update_cache: yes
+    name: helm
+
