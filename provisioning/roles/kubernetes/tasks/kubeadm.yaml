@@ -4,6 +4,7 @@
   - name: Drain nodes
     command: "kubectl drain {{ item }} --delete-emptydir-data --force --ignore-daemonsets"
     with_items: "{{ groups.nodes }}"
+    ignore_errors: yes
     when: "'controlplane' in group_names"
 
   - name: Reset nodes
@@ -17,6 +18,7 @@
   - name: Delete nodes
     command: "kubectl delete node {{ item }}"
     with_items: "{{ groups.nodes }}"
+    ignore_errors: yes
     when: "'controlplane' in group_names"
 
   - name: Reset controlplane
