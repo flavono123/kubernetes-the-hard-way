@@ -60,7 +60,8 @@
   register: containerd_default_config
   run_once: yes
 
-- set_fact:
+- name: Set containerd config
+  set_fact:
     containerd_config: "{{ containerd_default_config.stdout | from_toml | combine(containerd_systemd_cgroup_driver, recursive=True) }}"
 
 - name: Template the containerd configuration
