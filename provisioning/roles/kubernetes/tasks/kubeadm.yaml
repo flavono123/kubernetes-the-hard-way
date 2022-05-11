@@ -1,3 +1,13 @@
+- name: Check kube-apiserver running
+  become: yes
+  wait_for:
+    port: 6443
+    timeout: 10
+    msg: "kube-apiserver is not running"
+  register: kube_apiserver_port_result
+  ignore_errors: yes
+  when: "'controlplane' in group_names"
+
 - name: Reset kubeadm cluster
   become: yes
   block:
@@ -13,7 +23,6 @@
 
   - name: Reset iptables rules
     shell: "iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X"
-    when: "'nodes' in group_names"
 
   - name: Delete nodes
     command: "kubectl delete node {{ item }}"
@@ -24,6 +33,9 @@
   - name: Reset controlplane
     command: "kubeadm reset -f"
     when: "'controlplane' in group_names"
+      #  when:
+      #  - kube_apiserver_port_result.rc is defined
+      #  - kube_apiserver_port_result.rc == 0
   tags:
   - kubernetes/kubeadm/reset
 
@@ -40,7 +52,8 @@
     #  ignore_errors: yes
 
   - name: Initialize kubeadm in controlplane
-    command: "kubeadm init --control-plane-endpoint={{ ansible_hostname }}:6443 --apiserver-cert-extra-sans={{ ansible_hostname }}"
+    command: "kubeadm init --apiserver-advertise-address=\"192.168.1.2\" --control-plane-endpoint=\"192.168.1.2\":6443 --apiserver-cert-extra-sans=\"192.168.1.2\""
+    when: "'nodes' in group_names"
     register: kubeadm_init_result
     until: kubeadm_init_result.stdout.find("Your Kubernetes control-plane has initialized successfully!")
     delay: 120
