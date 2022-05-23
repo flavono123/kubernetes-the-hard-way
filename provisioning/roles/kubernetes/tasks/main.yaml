@@ -3,18 +3,27 @@
   tags:
   - kubernetes
   - kubernetes/swapoff
+
 - import_tasks: containerd.yaml
   tags:
   - kubernetes
   - kubernetes/containerd
+
 - import_tasks: kube_install.yaml
   tags:
   - kubernetes
   - kubernetes/kube_install
+
 - import_tasks: kubeadm.yaml
   tags:
   - kubernetes
   - kubernetes/kubeadm
+
+- import_tasks: calico.yaml
+  tags:
+  - kubernetes
+  - kubernetes/calico
+
 - import_tasks: helm.yaml
   tags:
   - kubernetes
