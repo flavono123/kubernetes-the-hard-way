@@ -51,9 +51,20 @@
     #  register: kube_apiserver_port_result
     #  ignore_errors: yes
 
+  - name: Collect kuebadm init options
+    set_fact:
+      kubeadm_init_option: "--{{ item.key }}={{ item.value }}"
+    with_items: "{{ kubeadm_init_options | dict2items }}"
+    register: kubeadm_init_option_list
+    when: "'controlplane' in group_names"
+
+  - name: Reduce kubeadm init options to a string
+    set_fact:
+      kubeadm_init_option_str: "{{ kubeadm_init_option_list.results | map(attribute='ansible_facts.kubeadm_init_option') | join(' ') }}"
+    when: "'controlplane' in group_names"
+
   - name: Initialize kubeadm in controlplane
-    command: "kubeadm init --apiserver-advertise-address=\"192.168.1.2\" --control-plane-endpoint=\"192.168.1.2\":6443 --apiserver-cert-extra-sans=\"192.168.1.2\""
-    when: "'nodes' in group_names"
+    command: "kubeadm init {{ kubeadm_init_option_str }}"
     register: kubeadm_init_result
     until: kubeadm_init_result.stdout.find("Your Kubernetes control-plane has initialized successfully!")
     delay: 120

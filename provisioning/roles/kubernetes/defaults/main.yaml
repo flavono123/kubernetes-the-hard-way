@@ -11,3 +11,23 @@ containerd_systemd_cgroup_driver:
 
 # kubeadm
 kube_version: 1.23.6
+
+kubeadm_init_options:
+  apiserver-advertise-address: 192.168.1.2
+  control-plane-endpoint: 192.168.1.2:6443
+  apiserver-cert-extra-sans: 192.168.2
+  pod-network-cidr: 172.16.0.0/16
+
+# cilium
+cilium_version: 1.11.4
+cilium_helm_values:
+  devices: enp0s8
+  tunnel: disabled
+  autoDirectNodeRoutes: 'true'
+  ipv4NativeRoutingCIDR: 192.168.0.0/16
+  ipam.operator.clusterPoolIPv4PodCIDRList:
+  - 172.16.0.0/16
+  # hubble.relay.enabled: true
+  # hubble.ui.enabled: true
+  # hostServices.enabled: true
+
