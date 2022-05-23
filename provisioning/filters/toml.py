@@ -17,4 +17,3 @@ class FilterModule(object):
         s = json.dumps(dict(yaml_variable))
         d = json.loads(s)
         return toml.dumps(d)
-    #return toml.dumps(dict(variable))
