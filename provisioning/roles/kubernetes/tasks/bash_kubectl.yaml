@@ -1,0 +1,28 @@
+- name: Install packages
+  become: yes
+  apt:
+    state: present
+    update_cache: yes
+    name:
+    - bash-completion
+    - binutils
+
+- name: Set bashrc to force color prompt
+  become: yes
+  lineinfile:
+    state: present
+    insertbefore: BOF
+    path: ~/.bashrc
+    line: force_color_prompt=yes
+
+- name: Set bashrc
+  become: yes
+  blockinfile:
+    state: present
+    insertafter: EOF
+    path: ~/.bashrc
+    block: |
+      source <(kubectl completion bash)
+      alias k=kubectl
+      alias c=clear
+      complete -F __start_kubectl k

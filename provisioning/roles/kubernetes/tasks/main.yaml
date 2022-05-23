@@ -29,3 +29,8 @@
   - kubernetes
   - kubernetes/helm
   when: "'controlplane' in group_names"
+
+- import_tasks: bash_kubectl.yaml
+  tags:
+  - kubernetes
+  - kubernetes/bash_kubectl
