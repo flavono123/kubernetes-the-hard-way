@@ -36,7 +36,7 @@
   - name: Copy the Calico custom resource definition
     become: yes
     copy:
-      content: "{{ calico_custom_resource_response.content | regex_replace('192\\.168\\.0\\.0\\/16', '172.16.0.0/16') | to_yaml(indent=2, width=1337) | replace('\\n', '\n') | replace('\"', '') }}"
+      content: "{{ calico_custom_resource_response.content | regex_replace('192\\.168\\.0\\.0\\/16', kube_pod_network_cidr) | to_yaml(indent=2, width=1337) | replace('\\n', '\n') | replace('\"', '') }}"
       dest: $HOME/calico/custom-resources.yaml
     ignore_errors: "{{ ansible_check_mode }}"
 

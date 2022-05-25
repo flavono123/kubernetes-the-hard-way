@@ -14,23 +14,10 @@ controlplane_node_ip: "{{ hostvars[controlplane_node_hostname]['ansible_facts'][
 kube_version: 1.23.6
 
 kube_apiserver_port: 6443
+kube_pod_network_cidr: 172.16.0.0/16
 
 kubeadm_init_options:
   apiserver-advertise-address: "{{ controlplane_node_ip }}"
   control-plane-endpoint: "{{ controlplane_node_ip }}:{{ kube_apiserver_port }}"
   apiserver-cert-extra-sans: "{{ controlplane_node_ip }}"
-  pod-network-cidr: 172.16.0.0/16
-
-# cilium
-cilium_version: 1.11.4
-cilium_helm_values:
-  devices: enp0s8
-  tunnel: disabled
-  autoDirectNodeRoutes: 'true'
-  ipv4NativeRoutingCIDR: 192.168.0.0/16
-  ipam.operator.clusterPoolIPv4PodCIDRList:
-  - 172.16.0.0/16
-  # hubble.relay.enabled: true
-  # hubble.ui.enabled: true
-  # hostServices.enabled: true
-
+  pod-network-cidr: "{{ kube_pod_network_cidr }}"
