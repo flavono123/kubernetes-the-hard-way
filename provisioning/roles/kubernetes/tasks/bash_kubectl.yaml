@@ -1,4 +1,4 @@
-- name: Install packages
+- name: Install APT packages
   become: yes
   apt:
     state: present
@@ -6,6 +6,14 @@
     name:
     - bash-completion
     - binutils
+    - jq
+
+- name: Install Snap packages
+  become: yes
+  snap:
+    state: present
+    name:
+    - yq
 
 - name: Set bashrc to force color prompt
   become: yes
@@ -26,3 +34,5 @@
       alias k=kubectl
       alias c=clear
       complete -F __start_kubectl k
+      export do="--dry-run=client -oyaml"
+      export now="--force --grace-period=0"
