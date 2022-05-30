@@ -1,0 +1,6 @@
+---
+- import_tasks: configure.yaml
+  tags:
+  - nfs
+  - nfs/configure
+

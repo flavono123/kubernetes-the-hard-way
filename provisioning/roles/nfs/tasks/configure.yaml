@@ -1,0 +1,40 @@
+- name: Turn up NFS in controlplane
+  become: yes
+  block:
+  - name: Install nfs-kernel-server
+    apt:
+      state: present
+      update_cache: yes
+      name:
+      - nfs-kernel-server
+
+  - name: Create NFS mount path
+    file:
+      state: directory
+      owner: nobody
+      group: nogroup
+      mode: "0777"
+      path: "{{ nfs_mount_path }}"
+
+  - name: Add exports table to /etc/exports
+    blockinfile:
+      path: /etc/exports
+      block: |
+        {{ nfs_mount_path }}  {{ nfs_network_cidr }}(rw,sync,no_subtree_check)
+
+  - name: Export /etc/exports
+    command: exportfs -a
+
+  - name: Restart nfs-kernel-server service
+    command: systemctl restart nfs-kernel-server
+
+  when:
+  - "'controlplane' in group_names"
+
+- name: Install nfs-client
+  become: yes
+  apt:
+    state: present
+    update_cache: yes
+    name:
+    - nfs-common

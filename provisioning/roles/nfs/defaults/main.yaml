@@ -1,0 +1,3 @@
+---
+nfs_mount_path: /nfs-storage
+nfs_network_cidr: 192.168.1.0/24
