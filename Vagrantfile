@@ -38,8 +38,20 @@ Vagrant.configure('2') do |config|
     worker.vm.hostname = 'cluster1-worker2'
     worker.vm.network :private_network, ip: '192.168.1.4'
     worker.vm.network :forwarded_port, guest: 22, host: 2224, id: 'ssh'
+  end
 
-    # All VMs are up, after cluster1-worker2 is up, provisioning the entire VMs at once
+  config.vm.define 'cluster1-worker3' do |worker|
+    worker.vm.provider 'virtualbox' do |vbox|
+      vbox.name = 'cluster1-worker3'
+      vbox.cpus = 2
+      vbox.memory = 2048
+    end
+
+    worker.vm.hostname = 'cluster1-worker3'
+    worker.vm.network :private_network, ip: '192.168.1.5'
+    worker.vm.network :forwarded_port, guest: 22, host: 2225, id: 'ssh'
+
+    # All VMs are up, after cluster1-worker3 is up, provisioning the entire VMs at once
     worker.vm.provision 'ansible' do |ansible|
       ansible.playbook = 'provisioning/cluster-nodes.yaml'
       ansible.inventory_path = 'provisioning/cluster1_nodes'
