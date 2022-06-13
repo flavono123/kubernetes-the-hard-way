@@ -34,3 +34,10 @@
   tags:
   - kubernetes
   - kubernetes/bash_kubectl
+
+- import_tasks: metrics_server.yaml
+  tags:
+  - kubernetes
+  - kubernetes/metrics_server
+  when: "'controlplane' in group_names"
+

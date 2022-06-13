@@ -1,0 +1,14 @@
+---
+- name: Install Pip3
+  become: yes
+  apt:
+    state: present
+    update_cache: yes
+    name: python3-pip
+
+- name: Install Python packages for Ansible collections
+  become: yes
+  pip:
+    state: present
+    name: kubernetes
+    executable: pip3

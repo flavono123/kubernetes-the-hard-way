@@ -2,3 +2,7 @@
 - name: restart containerd
   become: yes
   command: systemctl restart containerd
+
+- name: restart kubelet
+  become: yes
+  command: systemctl restart kubelet

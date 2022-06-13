@@ -1,0 +1,5 @@
+---
+- import_tasks: install.yaml
+  tags:
+  - ansible_collection
+  - ansible_collection/install
