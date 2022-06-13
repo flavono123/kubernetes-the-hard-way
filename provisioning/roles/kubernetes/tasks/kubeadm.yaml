@@ -2,9 +2,14 @@
   become: yes
   block:
   - name: Drain nodes
-    command: "kubectl drain {{ item }} --delete-emptydir-data --force --ignore-daemonsets"
+    kubernetes.core.k8s_drain:
+      state: drain
+      delete_options:
+        delete_emptydir_data: yes
+        force: yes
+        ignore_daemonsets: yes
+      name: "{{ item }}"
     with_items: "{{ groups.nodes }}"
-    ignore_errors: yes
     when: "'controlplane' in group_names"
 
   - name: Reset nodes
@@ -15,9 +20,12 @@
     shell: "iptables -F && iptables -t nat -F && iptables -t mangle -F && iptables -X"
 
   - name: Delete nodes
-    command: "kubectl delete node {{ item }}"
+    kubernetes.core.k8s:
+      state: absent
+      api_version: v1
+      kind: Node
+      name: "{{ item }}"
     with_items: "{{ groups.nodes }}"
-    ignore_errors: yes
     when: "'controlplane' in group_names"
 
   - name: Reset controlplane
@@ -92,7 +100,9 @@
       - op: replace
         path: /data/kubelet
         value: "{{ configmap_result.resources[0].data.kubelet | from_yaml | combine({'serverTLSBoostrap': true }) | to_yaml }}"
-    when: "'controlplane' in group_names"
+    when:
+    - "'controlplane' in group_names"
+    - "configmap_result.resources | length > 0"
 
   - name: Get current kubelet config
     shell: cat /var/lib/kubelet/config.yaml
