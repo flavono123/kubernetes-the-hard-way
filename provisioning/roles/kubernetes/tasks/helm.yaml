@@ -17,3 +17,8 @@
     update_cache: yes
     name: helm
 
+- name: Install Helm plugin diff
+  become: yes
+  kubernetes.core.helm_plugin:
+    state: present
+    plugin_path: https://github.com/databus23/helm-diff
