@@ -9,6 +9,11 @@
   - kubernetes
   - kubernetes/containerd
 
+- import_tasks: bash_kubectl.yaml
+  tags:
+  - kubernetes
+  - kubernetes/bash_kubectl
+
 - import_tasks: kube_install.yaml
   tags:
   - kubernetes
@@ -30,10 +35,11 @@
   - kubernetes/helm
   when: "'controlplane' in group_names"
 
-- import_tasks: bash_kubectl.yaml
+- import_tasks: storage_class.yaml
   tags:
   - kubernetes
-  - kubernetes/bash_kubectl
+  - kubernetes/storage_class
+  when: "'controlplane' in group_names"
 
 - import_tasks: metrics_server.yaml
   tags:
