@@ -43,7 +43,7 @@
     copy:
       content: "{{ calico_custom_resource_response.content | regex_replace('192\\.168\\.0\\.0\\/16', kube_pod_network_cidr) | to_yaml(indent=2, width=1337) | replace('\\n', '\n') | replace('\"', '') }}"
       dest: $HOME/calico/custom-resources.yaml
-    register: copy_calido_crd
+    register: copy_calico_crd
     when:
     - calico_custom_resource_response is not skipped
     - calico_custom_resource_response is not failed
@@ -57,7 +57,6 @@
     - tigera-operator.yaml
     - custom-resources.yaml
     when:
-    - copy_calico_crd is defined
     - copy_calico_crd is not skipped
     - copy_calico_crd is not failed
 
