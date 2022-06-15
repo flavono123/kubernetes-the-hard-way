@@ -121,31 +121,29 @@
       group: root
     notify: restart kubelet
 
-  # TODO: Get CSRs from node on ansible playing
-  #- name: Get CSRs
-  #  kubernetes.core.k8s_info:
-  #    kind: CertificateSigningRequest
-  #    api_version: certificates.k8s.io/v1
-  #    field_selectors: spec.signerName=kubernetes.io/kubelet-serving
-  #  register: csr_result
-  #  when: "'controlplane' in group_names"
+  - name: Flush handlers for restarting kubelets
+    meta: flush_handlers
 
-  #- name: Show CSRs
-  #  debug:
-  #    msg: "{{ csr_result.resources | map(attribute='metadata.name') | list }}"
-  #  when: "'controlplane' in group_names"
+  - name: Wait graceful period for restarting kubelets and creating CSRs
+    pause:
+      seconds: 30
 
-  #- name: Approve CSRs
-  #  command: "kubectl certificate approve {{ item }}"
-  #  with_items: "{{ csr_result.resources | map(attribute='metadata.name') | list }}"
-  #  when: "'controlplane' in group_names"
+  - name: Get CSRs
+    kubernetes.core.k8s_info:
+      kind: CertificateSigningRequest
+      api_version: certificates.k8s.io/v1
+      field_selectors: spec.signerName=kubernetes.io/kubelet-serving
+    register: csr_result
+    when: "'controlplane' in group_names"
 
-  # HACK: manual play aboves
-  - name: Copy the script approve node CSRs
-    copy:
-      src: approve_node_csr.sh
-      dest: $HOME/approve_node_csr.sh
-      mode: '0755'
+  - name: Show CSRs
+    debug:
+      msg: "{{ csr_result.resources | map(attribute='metadata.name') | list }}"
+    when: "'controlplane' in group_names"
+
+  - name: Approve CSRs
+    command: "kubectl certificate approve {{ item }}"
+    with_items: "{{ csr_result.resources | map(attribute='metadata.name') | list }}"
     when: "'controlplane' in group_names"
 
   when:
