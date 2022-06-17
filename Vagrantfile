@@ -14,6 +14,10 @@ Vagrant.configure('2') do |config|
     master.vm.hostname = 'cluster1-master1'
     master.vm.network :private_network, ip: '192.168.1.2'
     master.vm.network :forwarded_port, guest: 22, host: 2222, id: 'ssh'
+    # K8s NodPort ranges
+    (30_000..32_767).each do |port|
+      master.vm.network :forwarded_port, guest: port, host: port
+    end
   end
 
   config.vm.define 'cluster1-worker1' do |worker|

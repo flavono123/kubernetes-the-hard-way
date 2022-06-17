@@ -47,3 +47,9 @@
   - kubernetes/metrics_server
   when: "'controlplane' in group_names"
 
+- import_tasks: prometheus.yaml
+  tags:
+  - kubernetes
+  - kubernetes/prometheus
+  when: "'controlplane' in group_names"
+

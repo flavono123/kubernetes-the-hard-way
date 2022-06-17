@@ -21,3 +21,8 @@ kubeadm_init_options:
   control-plane-endpoint: "{{ controlplane_node_ip }}:{{ kube_apiserver_port }}"
   apiserver-cert-extra-sans: "{{ controlplane_node_ip }}"
   pod-network-cidr: "{{ kube_pod_network_cidr }}"
+
+# prometheus
+prometheus_namespace: prometheus
+prometheus_kube_prometheus_stack: prometheus
+prometheus_service: "{{ prometheus_kube_prometheus_stack }}-kube-prometheus-prometheus.{{ prometheus_namespace }}"

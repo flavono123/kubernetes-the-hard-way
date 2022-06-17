@@ -55,7 +55,7 @@
           path: /nfs-storage
           server: "{{ controlplane_node_ip }}"
           nodeSelector:
-          kubernetes.io/hostname: "{{ controlplane_node_hostname }}"
+            kubernetes.io/hostname: "{{ controlplane_node_hostname }}"
         tolerations:
         - key: node-role.kubernetes.io/master
           operator: Exists
