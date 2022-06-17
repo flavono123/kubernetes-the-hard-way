@@ -11,10 +11,4 @@
     name: metrics-server
     chart_ref: metrics-server/metrics-server
     release_namespace: kube-system
-    values:
-      nodeSelector:
-        kubernetes.io/hostname: "{{ controlplane_node_hostname }}"
-      tolerations:
-      - key: node-role.kubernetes.io/master
-        operator: Exists
-        effect: NoSchedule
+    values: "{{ controlplane_selector_toleration }}"

@@ -50,14 +50,10 @@
       namespace: nfs-provisioner
       chart_ref: nfs-subdir-external-provisioner/nfs-subdir-external-provisioner
       create_namespace: yes
-      values:
-        nfs:
-          path: /nfs-storage
-          server: "{{ controlplane_node_ip }}"
-          nodeSelector:
-            kubernetes.io/hostname: "{{ controlplane_node_hostname }}"
-        tolerations:
-        - key: node-role.kubernetes.io/master
-          operator: Exists
-          effect: NoSchedule
-
+      values: "{{ controlplane_selector_toleration | combine({
+          'nfs': {
+            'path': '/nfs-storage',
+            'server': controlplane_node_ip
+          }
+        })
+      }}"

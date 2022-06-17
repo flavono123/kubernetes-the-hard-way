@@ -22,7 +22,18 @@ kubeadm_init_options:
   apiserver-cert-extra-sans: "{{ controlplane_node_ip }}"
   pod-network-cidr: "{{ kube_pod_network_cidr }}"
 
+controlplane_selector:
+  nodeSelector:
+    kubernetes.io/hostname: "{{ controlplane_node_hostname }}"
+controlplane_toleration:
+  tolerations:
+  - key: node-role.kubernetes.io/master
+    operator: Exists
+    effect: NoSchedule
+
+controlplane_selector_toleration: "{{ controlplane_selector | combine(controlplane_toleration) }}"
+
 # prometheus
 prometheus_namespace: prometheus
 prometheus_kube_prometheus_stack: prometheus
-prometheus_service: "{{ prometheus_kube_prometheus_stack }}-kube-prometheus-prometheus.{{ prometheus_namespace }}"
+prometheus_service_url: "http://{{ prometheus_kube_prometheus_stack }}-kube-prometheus-prometheus.{{ prometheus_namespace }}"
