@@ -1,0 +1,15 @@
+- name: Add Helm repository kedacore
+  become: yes
+  kubernetes.core.helm_repository:
+    name: kedacore
+    repo_url: https://kedacore.github.io/charts
+
+- name: Install Helm chart keda
+  become: yes
+  kubernetes.core.helm:
+    state: present
+    name: keda
+    chart_ref: kedacore/keda
+    release_namespace: keda
+    create_namespace: yes
+    values: "{{ controlplane_selector_toleration }}"

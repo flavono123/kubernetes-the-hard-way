@@ -1,0 +1,42 @@
+- name: Add Helm repository prometheus-community
+  become: yes
+  kubernetes.core.helm_repository:
+    name: prometheus-community
+    repo_url: https://prometheus-community.github.io/helm-charts
+
+- name: Install Helm chart kube-prometheus-stack
+  become: yes
+  kubernetes.core.helm:
+    state: present
+    name: "{{ prometheus_kube_prometheus_stack }}"
+    chart_ref: prometheus-community/kube-prometheus-stack
+    release_namespace: "{{ prometheus_namespace }}"
+    create_namespace: yes
+    values:
+      alertmanager:
+        alertmanagerSpec: "{{ controlplane_selector_toleration }}"
+      prometheusOperator: "{{ controlplane_selector_toleration | combine({
+          'admissionWebhooks': {
+            'patch': controlplane_selector_toleration
+          }
+        })
+      }}"
+      prometheus:
+        service:
+          type: NodePort
+        promethuesSpec: "{{ controlplane_selector_toleration }}"
+
+- name: Install Helm chart prometheus-adapter
+  become: yes
+  kubernetes.core.helm:
+    state: present
+    name: prometheus-adapter
+    chart_ref: prometheus-community/prometheus-adapter
+    release_namespace: "{{ prometheus_namespace }}"
+    create_namespace: yes
+    values: "{{ controlplane_selector_toleration | combine({
+          'prometheus': {
+            'url': prometheus_service_url
+          }
+        }
+      )}}"

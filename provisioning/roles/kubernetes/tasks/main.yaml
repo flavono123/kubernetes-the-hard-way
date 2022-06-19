@@ -53,3 +53,9 @@
   - kubernetes/prometheus
   when: "'controlplane' in group_names"
 
+- import_tasks: keda.yaml
+  tags:
+  - kubernetes
+  - kubernetes/keda
+  when: "'controlplane' in group_names"
+
