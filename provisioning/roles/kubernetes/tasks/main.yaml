@@ -51,11 +51,22 @@
   tags:
   - kubernetes
   - kubernetes/prometheus
-  when: "'controlplane' in group_names"
+  when:
+  - "'controlplane' in group_names"
+  - prometheus_set is defined
+  - proemtheus_set
 
 - import_tasks: keda.yaml
   tags:
   - kubernetes
   - kubernetes/keda
-  when: "'controlplane' in group_names"
+  when:
+  - "'controlplane' in group_names"
+  - keda_set is defined
+  - keda_set
 
+- import_tasks: plugin.yaml
+  tags:
+  - kubernetes
+  - kubernetes/plugin
+  when: "'controlplane' in group_names"

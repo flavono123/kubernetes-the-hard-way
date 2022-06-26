@@ -24,7 +24,7 @@ Vagrant.configure('2') do |config|
     worker.vm.provider 'virtualbox' do |vbox|
       vbox.name = 'cluster1-worker1'
       vbox.cpus = 2
-      vbox.memory = 2048
+      vbox.memory = 3072
     end
 
     worker.vm.hostname = 'cluster1-worker1'
@@ -36,7 +36,7 @@ Vagrant.configure('2') do |config|
     worker.vm.provider 'virtualbox' do |vbox|
       vbox.name = 'cluster1-worker2'
       vbox.cpus = 2
-      vbox.memory = 2048
+      vbox.memory = 3072
     end
 
     worker.vm.hostname = 'cluster1-worker2'
@@ -48,7 +48,7 @@ Vagrant.configure('2') do |config|
     worker.vm.provider 'virtualbox' do |vbox|
       vbox.name = 'cluster1-worker3'
       vbox.cpus = 2
-      vbox.memory = 2048
+      vbox.memory = 3072
     end
 
     worker.vm.hostname = 'cluster1-worker3'
