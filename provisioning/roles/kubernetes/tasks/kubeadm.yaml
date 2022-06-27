@@ -95,11 +95,11 @@
     kubernetes.core.k8s_json_patch:
       kind: ConfigMap
       namespace: kube-system
-      name: kubelet-config-1.23
+      name: kubelet-config
       patch:
       - op: replace
         path: /data/kubelet
-        value: "{{ configmap_result.resources[0].data.kubelet | from_yaml | combine({'serverTLSBoostrap': true }) | to_yaml }}"
+        value: "{{ configmap_result.resources[0].data.kubelet | from_yaml | combine({'serverTLSBootstrap': true }) | to_yaml }}"
     when:
     - "'controlplane' in group_names"
     - "configmap_result.resources | length > 0"

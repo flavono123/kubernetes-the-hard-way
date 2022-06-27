@@ -52,7 +52,7 @@
     state: present
     update_cache: yes
     name:
-    - containerd.io
+    - "containerd.io={{ containerd_version }}"
 
 - name: Get containerd default configurations
   become: yes

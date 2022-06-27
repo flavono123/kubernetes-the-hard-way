@@ -1,5 +1,6 @@
 ---
 # containerd
+containerd_version: 1.6.6-1
 containerd_systemd_cgroup_driver:
   plugins:
     io.containerd.grpc.v1.cri:
@@ -11,7 +12,7 @@ containerd_systemd_cgroup_driver:
 controlplane_node_hostname: "{{ groups['controlplane'][0] }}"
 controlplane_node_ip: "{{ hostvars[controlplane_node_hostname]['ansible_facts']['enp0s8']['ipv4']['address'] }}"
 # kubeadm
-kube_version: 1.23.6
+kube_version: 1.24.2
 
 kube_apiserver_port: 6443
 kube_pod_network_cidr: 172.16.0.0/16
@@ -21,12 +22,16 @@ kubeadm_init_options:
   control-plane-endpoint: "{{ controlplane_node_ip }}:{{ kube_apiserver_port }}"
   apiserver-cert-extra-sans: "{{ controlplane_node_ip }}"
   pod-network-cidr: "{{ kube_pod_network_cidr }}"
+  cri-socket=: unix:///var/run/containerd/containerd.sock
 
 controlplane_selector:
   nodeSelector:
     kubernetes.io/hostname: "{{ controlplane_node_hostname }}"
 controlplane_toleration:
   tolerations:
+  - key: node-role.kubernetes.io/control-plane
+    operator: Exists
+    effect: NoSchedule
   - key: node-role.kubernetes.io/master
     operator: Exists
     effect: NoSchedule
