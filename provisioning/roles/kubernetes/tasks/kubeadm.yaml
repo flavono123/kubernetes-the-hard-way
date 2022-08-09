@@ -78,7 +78,7 @@
     when: "'nodes' in group_names"
 
   - name: Join nodes to the cluster
-    command: "{{ hostvars[inventory_hostname].join_command.stdout | trim }}"
+    command: "{{ hostvars[inventory_hostname].join_command.stdout | trim + ' --cri-socket ' + kubeadm_init_options['cri-socket'] }}"
     when:
     - "'nodes' in group_names"
     - join_command.stdout != ""

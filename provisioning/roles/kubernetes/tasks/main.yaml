@@ -9,6 +9,11 @@
   - kubernetes
   - kubernetes/containerd
 
+- import_tasks: crio.yaml
+  tags:
+  - kubernetes
+  - kubernetes/crio
+
 - import_tasks: bash_kubectl.yaml
   tags:
   - kubernetes

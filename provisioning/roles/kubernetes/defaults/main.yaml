@@ -11,6 +11,11 @@ containerd_systemd_cgroup_driver:
               SystemdCgroup: true
 controlplane_node_hostname: "{{ groups['controlplane'][0] }}"
 controlplane_node_ip: "{{ hostvars[controlplane_node_hostname]['ansible_facts']['enp0s8']['ipv4']['address'] }}"
+
+# crio-o
+crio_version: "1.23"
+crio_os: "xUbuntu_{{ ansible_distribution_version }}"
+
 # kubeadm
 kube_version: 1.24.2
 
@@ -22,7 +27,9 @@ kubeadm_init_options:
   control-plane-endpoint: "{{ controlplane_node_ip }}:{{ kube_apiserver_port }}"
   apiserver-cert-extra-sans: "{{ controlplane_node_ip }}"
   pod-network-cidr: "{{ kube_pod_network_cidr }}"
-  cri-socket=: unix:///var/run/containerd/containerd.sock
+  #cri-socket: unix:///var/run/containerd/containerd.sock
+  cri-socket: /var/run/crio/crio.sock
+
 
 controlplane_selector:
   nodeSelector:

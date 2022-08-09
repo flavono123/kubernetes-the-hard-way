@@ -2,7 +2,6 @@
 cluster1-master1
 cluster1-worker1
 cluster1-worker2
-cluster1-worker3
 
 [controlplane]
 cluster1-master1
@@ -10,4 +9,3 @@ cluster1-master1
 [nodes]
 cluster1-worker1
 cluster1-worker2
-cluster1-worker3
