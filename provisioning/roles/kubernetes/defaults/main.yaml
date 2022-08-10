@@ -1,4 +1,12 @@
 ---
+# For optional roles
+containerd: False
+crio: False
+storage_class: False
+metrics_server: False
+prometheus: False
+keda: False
+
 # containerd
 containerd_version: 1.6.6-1
 containerd_systemd_cgroup_driver:
@@ -13,7 +21,7 @@ controlplane_node_hostname: "{{ groups['controlplane'][0] }}"
 controlplane_node_ip: "{{ hostvars[controlplane_node_hostname]['ansible_facts']['enp0s8']['ipv4']['address'] }}"
 
 # crio-o
-crio_version: "1.23"
+crio_version: "1.24"
 crio_os: "xUbuntu_{{ ansible_distribution_version }}"
 
 # kubeadm
