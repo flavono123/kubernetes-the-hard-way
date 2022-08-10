@@ -6,6 +6,12 @@
     access_time: preserve
     modification_time: preserve
 
+- name: Get the cri module file
+  become: yes
+  stat:
+    path: /etc/modules-load.d/cri.conf
+  register: cri_module_file
+
 - name: Configure cri module
   become: yes
   blockinfile:
@@ -14,6 +20,7 @@
     block: |
       overlay
       br_netfilter
+  when: cri_module_file.stat.exists
 
 - name: Add modules overlay and br_netfilter
   become: yes
@@ -74,12 +81,15 @@
       mode: '0644'
       owner: root
       group: root
-    notify: restart containerd
     vars:
       config: "{{ containerd_config }}"
 
-  - name: Flush handlers for restart containerd
-    meta: flush_handlers
+  - name: Restart containerd
+    become: yes
+    systemd:
+      state: restarted
+      name: containerd
+      daemon_reload: true
   when:
   - containerd
 
@@ -149,10 +159,10 @@
           "NET_RAW",
         ]
 
-  - name: Reload CRI-O
+  - name: Restart CRI-O
     become: yes
     systemd:
-      state: reloaded
+      state: restarted
       name: crio
       daemon_reload: true
   when:
