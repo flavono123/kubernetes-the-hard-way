@@ -1,7 +1,7 @@
 ---
 # For optional roles
 containerd: False
-crio: False
+crio: True
 storage_class: False
 metrics_server: False
 prometheus: False
@@ -21,7 +21,7 @@ controlplane_node_hostname: "{{ groups['controlplane'][0] }}"
 controlplane_node_ip: "{{ hostvars[controlplane_node_hostname]['ansible_facts']['enp0s8']['ipv4']['address'] }}"
 
 # crio-o
-crio_version: "1.24"
+crio_version: "1.23"
 crio_os: "xUbuntu_{{ ansible_distribution_version }}"
 
 # kubeadm

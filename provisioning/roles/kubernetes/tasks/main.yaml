@@ -4,19 +4,10 @@
   - kubernetes
   - kubernetes/swapoff
 
-- import_tasks: containerd.yaml
+- import_tasks: cri.yaml
   tags:
   - kubernetes
-  - kubernetes/containerd
-  when:
-  - containerd
-
-- import_tasks: crio.yaml
-  tags:
-  - kubernetes
-  - kubernetes/crio
-  when:
-  - crio
+  - kubernetes/cri
 
 - import_tasks: bash_kubectl.yaml
   tags:
