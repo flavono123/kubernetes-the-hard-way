@@ -21,8 +21,11 @@ controlplane_node_hostname: "{{ groups['controlplane'][0] }}"
 controlplane_node_ip: "{{ hostvars[controlplane_node_hostname]['ansible_facts']['enp0s8']['ipv4']['address'] }}"
 
 # crio-o
-crio_version: "1.23"
+crio_version: "1.24"
 crio_os: "xUbuntu_{{ ansible_distribution_version }}"
+
+# critest
+critest_version: v1.24.2
 
 # kubeadm
 kube_version: 1.24.2

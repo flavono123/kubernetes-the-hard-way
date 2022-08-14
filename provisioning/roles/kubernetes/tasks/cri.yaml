@@ -167,3 +167,14 @@
       daemon_reload: true
   when:
   - crio
+
+- name: Install cri-tools
+  become: yes
+  unarchive:
+    remote_src: yes
+    src: "https://github.com/kubernetes-sigs/cri-tools/releases/download/{{ critest_version }}/{{ item }}-{{ critest_version }}-linux-amd64.tar.gz"
+    dest: /usr/local/bin/
+  with_items:
+  - crictl
+  - critest
+
