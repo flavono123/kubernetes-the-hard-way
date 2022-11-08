@@ -12,7 +12,8 @@ Vagrant.configure('2') do |config|
     end
 
     master.vm.hostname = 'cluster1-master1'
-    master.vm.network :private_network, ip: '192.168.1.2'
+    master.vm.network :private_network, ip: '192.168.1.2',
+      virtualbox__intnet: true
     master.vm.network :forwarded_port, guest: 22, host: 2222, id: 'ssh'
     # K8s NodPort ranges
     (30_000..32_767).each do |port|
@@ -28,7 +29,8 @@ Vagrant.configure('2') do |config|
     end
 
     worker.vm.hostname = 'cluster1-worker1'
-    worker.vm.network :private_network, ip: '192.168.1.3'
+    worker.vm.network :private_network, ip: '192.168.1.3',
+      virtualbox__intnet: true
     worker.vm.network :forwarded_port, guest: 22, host: 2223, id: 'ssh'
   end
 
@@ -40,7 +42,8 @@ Vagrant.configure('2') do |config|
     end
 
     worker.vm.hostname = 'cluster1-worker2'
-    worker.vm.network :private_network, ip: '192.168.1.4'
+    worker.vm.network :private_network, ip: '192.168.1.4',
+      virtualbox__intnet: true
     worker.vm.network :forwarded_port, guest: 22, host: 2224, id: 'ssh'
 
     # All VMs are up, after cluster1-worker2 is up, provisioning the entire VMs at once
