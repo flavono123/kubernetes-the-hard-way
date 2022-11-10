@@ -8,7 +8,7 @@ prometheus: False
 keda: False
 
 # containerd
-containerd_version: 1.6.6-1
+containerd_version: 1.6.9-1
 containerd_systemd_cgroup_driver:
   plugins:
     io.containerd.grpc.v1.cri:
@@ -21,11 +21,11 @@ controlplane_node_hostname: "{{ groups['controlplane'][0] }}"
 controlplane_node_ip: "{{ hostvars[controlplane_node_hostname]['ansible_facts']['enp0s8']['ipv4']['address'] }}"
 
 # crio-o
-crio_version: "1.24"
+crio_version: "1.25"
 crio_os: "xUbuntu_{{ ansible_distribution_version }}"
 
-# critest
-critest_version: v1.24.2
+# crictl
+crictl_version: v1.25.0
 
 # kubeadm
 kube_version: 1.25.3

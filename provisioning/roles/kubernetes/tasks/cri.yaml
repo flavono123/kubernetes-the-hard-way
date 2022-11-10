@@ -172,9 +172,8 @@
   become: yes
   unarchive:
     remote_src: yes
-    src: "https://github.com/kubernetes-sigs/cri-tools/releases/download/{{ critest_version }}/{{ item }}-{{ critest_version }}-linux-amd64.tar.gz"
+    src: "https://github.com/kubernetes-sigs/cri-tools/releases/download/{{ crictl_version }}/{{ item }}-{{ crictl_version }}-linux-amd64.tar.gz"
     dest: /usr/local/bin/
   with_items:
   - crictl
-  - critest
 
