@@ -67,7 +67,7 @@
   blockinfile:
     state: present
     block: |
-      Host cluster*
+      Host node-*
         IdentityFile /home/vagrant/.ssh/id_ssh_rsa
         StrictHostKeyChecking no
     path: /home/vagrant/.ssh/config
