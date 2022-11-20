@@ -7,6 +7,8 @@ metrics_server: False
 prometheus: False
 keda: False
 
+cni: flannel
+
 # containerd
 containerd_version: 1.6.9-1
 containerd_systemd_cgroup_driver:

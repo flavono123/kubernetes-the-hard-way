@@ -28,6 +28,23 @@
   tags:
   - kubernetes
   - kubernetes/calico
+  when:
+  - cni == 'calico'
+
+- import_tasks: flannel.yaml
+  tags:
+  - kubernetes
+  - kubernetes/flannel
+  when:
+  - "'controlplane' is in group_names"
+  - cni == "flannel"
+
+- import_tasks: metallb.yaml
+  tags:
+  - kubernetes
+  - kubernetes/metallb
+  when:
+  - "'controlplane' is in group_names"
 
 - import_tasks: helm.yaml
   tags:

@@ -1,0 +1,23 @@
+- name: Create the directory for flannel
+  become: yes
+  file:
+    state: directory
+    path: $HOME/flannel
+
+- name: Copy the manifest file
+  become: yes
+  copy:
+    src: kube-flannel.yaml
+    dest: $HOME/flannel/kube-flannel.yaml
+    mode: '0600'
+
+- name: Replace the pod CIDR
+  become: yes
+  replace:
+    path: $HOME/flannel/kube-flannel.yaml
+    regexp: '10\.244\.0\.0\/16'
+    replace: "{{ kube_pod_network_cidr }}"
+
+- name: Install the flannel
+  become: yes
+  command: kubectl apply -f $HOME/flannel/kube-flannel.yaml
