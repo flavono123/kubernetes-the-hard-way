@@ -39,6 +39,12 @@
   - "'controlplane' is in group_names"
   - cni == "flannel"
 
+- import_tasks: helm.yaml
+  tags:
+  - kubernetes
+  - kubernetes/helm
+  when: "'controlplane' in group_names"
+
 - import_tasks: metallb.yaml
   tags:
   - kubernetes
@@ -46,11 +52,12 @@
   when:
   - "'controlplane' is in group_names"
 
-- import_tasks: helm.yaml
+- import_tasks: ingress-nginx.yaml
   tags:
   - kubernetes
-  - kubernetes/helm
-  when: "'controlplane' in group_names"
+  - kubernetes/ingress-nginx
+  when:
+  - "'controlplane' is in group_names"
 
 - import_tasks: storage_class.yaml
   tags:
