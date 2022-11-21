@@ -1,6 +1,6 @@
 - name: Install MetalLB release
   become: yes
-  command: helm upgrade metallb metallb -n metallb-system --create-namespace --repo https://metallb.github.io/metallb
+  command: helm upgrade --install metallb metallb -n metallb-system --create-namespace --repo https://metallb.github.io/metallb
 
 - name: Create the directory for metallb
   become: yes
