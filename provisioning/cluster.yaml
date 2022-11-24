@@ -3,5 +3,4 @@
   - ansible_collection
   - dns
   - ssh
-  - nfs
   - kubernetes

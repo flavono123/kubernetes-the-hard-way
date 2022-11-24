@@ -8,6 +8,10 @@
     state: directory
     path: $HOME/metallb
 
+- name: Wait graceful period for installing metallb
+  pause:
+    seconds: 120
+
 - name: Copy the l2conf.yaml
   become: yes
   copy:

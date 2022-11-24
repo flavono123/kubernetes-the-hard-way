@@ -95,4 +95,6 @@
   tags:
   - kubernetes
   - kubernetes/plugin
-  when: "'controlplane' in group_names"
+  when:
+  - "'controlplane' in group_names"
+  - plugin
