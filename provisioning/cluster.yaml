@@ -1,4 +1,6 @@
-- hosts: k8s
+- hosts:
+  - k8s
+  - nk8s
   roles:
   - ansible_collection
   - dns

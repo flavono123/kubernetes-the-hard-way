@@ -1,5 +1,17 @@
 # frozen_string_literal: true
 
+INVENTORIES = %w[
+  k8s
+  nk8s
+]
+
+inventory = ENV['CLUSTER'] || INVENTORIES[0]
+
+unless INVENTORIES.include? inventory
+  STDERR.puts "\e[31m#{inventory} should be one of the followings: #{INVENTORIES.join(', ')}\e[0m"
+  exit 1
+end
+
 Vagrant.configure('2') do |config|
   config.vm.box = 'ubuntu/focal64'
   config.vm.box_version = '20220215.1.0'
@@ -49,7 +61,7 @@ Vagrant.configure('2') do |config|
     # All VMs are up, after node-3 is up, provisioning the entire VMs at once
     worker.vm.provision 'ansible' do |ansible|
       ansible.playbook = 'provisioning/cluster.yaml'
-      ansible.inventory_path = 'provisioning/inventories/k8s'
+      ansible.inventory_path = "provisioning/inventories/#{inventory}"
       ansible.limit = 'all'
     end
   end

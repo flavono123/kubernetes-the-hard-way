@@ -1,0 +1,11 @@
+[nk8s]
+node-1
+node-2
+node-3
+
+[controlplane]
+node-1
+
+[nodes]
+node-2
+node-3
