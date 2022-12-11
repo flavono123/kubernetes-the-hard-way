@@ -49,7 +49,7 @@ Vagrant.configure('2') do |config|
     # All VMs are up, after node-3 is up, provisioning the entire VMs at once
     worker.vm.provision 'ansible' do |ansible|
       ansible.playbook = 'provisioning/cluster.yaml'
-      ansible.inventory_path = 'provisioning/k8s'
+      ansible.inventory_path = 'provisioning/inventories/k8s'
       ansible.limit = 'all'
     end
   end
