@@ -1,0 +1,6 @@
+installation:
+  calicoNetwork:
+    ipPools:
+    - blockSize: 24
+      cidr: {{ kube_pod_network_cidr }}
+      encapsulation: VXLANCrossSubnet

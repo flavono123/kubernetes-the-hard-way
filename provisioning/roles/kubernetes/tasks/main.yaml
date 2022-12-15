@@ -24,11 +24,18 @@
   - kubernetes
   - kubernetes/kubeadm
 
+- import_tasks: helm.yaml
+  tags:
+  - kubernetes
+  - kubernetes/helm
+  when: "'controlplane' in group_names"
+
 - import_tasks: calico.yaml
   tags:
   - kubernetes
   - kubernetes/calico
   when:
+  - "'controlplane' is in group_names"
   - cni == 'calico'
 
 - import_tasks: flannel.yaml
@@ -38,12 +45,6 @@
   when:
   - "'controlplane' is in group_names"
   - cni == "flannel"
-
-- import_tasks: helm.yaml
-  tags:
-  - kubernetes
-  - kubernetes/helm
-  when: "'controlplane' in group_names"
 
 - import_tasks: metallb.yaml
   tags:

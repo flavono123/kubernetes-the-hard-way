@@ -1,73 +1,18 @@
-- name: Delete the Calico operators and resources
+- name: Template the containerd configuration
   become: yes
-  kubernetes.core.k8s:
-    state: absent
-    src: "$HOME/calico/{{ item }}"
-  with_items:
-  - custom-resources.yaml
-  - tigera-operator.yaml
-  tags:
-  - kubernetes/calico/reset
-  when:
-  - "'controlplane' is in group_names"
-  - calico_reset is defined
-  - calico_reset
+  template:
+    src: tigera-operator/values.yaml
+    dest: $HOME/tigera-operator-values.yaml
+    mode: '0644'
+    owner: root
+    group: root
 
-- name: Set the Calico CNI
+- name: Install Tigera operator release
   become: yes
-  block:
-  - name: Create the directory for Calico
-    become: yes
-    file:
-      state: directory
-      path: $HOME/calico
+  command: |
+    helm upgrade --install \
+      tigera-operator tigera-operator \
+      -n tigera-operator --create-namespace \
+      --repo https://projectcalico.docs.tigera.io/charts
+      --values $HOME/tigera-operator-values.yaml
 
-  - name: Get the Calico operator definition
-    become: yes
-    get_url:
-      url: https://projectcalico.docs.tigera.io/manifests/tigera-operator.yaml
-      dest: $HOME/calico/tigera-operator.yaml
-
-  - name: Get the Calico custom resource definition
-    become: yes
-    uri:
-      url: https://projectcalico.docs.tigera.io/manifests/custom-resources.yaml
-      return_content: yes
-    register: calico_custom_resource_response
-
-  - debug:
-      var: calico_custom_resource_response
-
-  - name: Copy the Calico custom resource definition
-    become: yes
-    copy:
-      content: "{{ calico_custom_resource_response.content | regex_replace('192\\.168\\.0\\.0\\/16', kube_pod_network_cidr) | to_yaml(indent=2, width=1337) | replace('\\n', '\n') | replace('\"', '') }}"
-      dest: $HOME/calico/custom-resources.yaml
-    register: copy_calico_crd
-    when:
-    - calico_custom_resource_response is not skipped
-    - calico_custom_resource_response is not failed
-
-  - name: Create the Calico operaters and resoureces
-    become: yes
-    kubernetes.core.k8s:
-      state: present
-      src: "$HOME/calico/{{ item }}"
-    with_items:
-    - tigera-operator.yaml
-    - custom-resources.yaml
-    when:
-    - copy_calico_crd is not skipped
-    - copy_calico_crd is not failed
-
-  - name: Get the calicoctl
-    become: yes
-    get_url:
-      url: https://github.com/projectcalico/calico/releases/download/v3.23.1/calicoctl-linux-amd64
-      dest: /usr/local/bin/calicoctl
-      mode: '0755'
-  when:
-  - "'controlplane' is in group_names"
-  - calico_reset is not defined
-  tags:
-  - kubernetes/calico/set
