@@ -38,6 +38,16 @@
   tags:
   - kubernetes/kubeadm/reset
 
+- name: Check if port 6443 is listening
+  wait_for:
+    host: node-1
+    port: 6443
+    delay: 5
+    timeout: 10
+    msg: "Timeout waiting for 6443 to respond"
+  register: kube_apiserver_port_check
+  ignore_errors: yes
+
 - name: Set kubeadm cluster
   become: yes
   block:
@@ -148,5 +158,6 @@
 
   when:
   - kubeadm_reset is not defined
+  - kube_apiserver_port_check.failed == true
   tags:
   - kubernetes/kubeadm/set
