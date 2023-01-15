@@ -34,5 +34,3 @@
       alias k=kubectl
       alias c=clear
       complete -F __start_kubectl k
-      export do="--dry-run=client -oyaml"
-      export now="--force --grace-period=0"
