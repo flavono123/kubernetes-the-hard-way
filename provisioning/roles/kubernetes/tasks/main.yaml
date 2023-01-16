@@ -52,6 +52,7 @@
   - kubernetes/metallb
   when:
   - "'controlplane' is in group_names"
+  - metallb
 
 - import_tasks: ingress-nginx.yaml
   tags:
@@ -59,6 +60,7 @@
   - kubernetes/ingress-nginx
   when:
   - "'controlplane' is in group_names"
+  - ingress_nginx
 
 - import_tasks: storage_class.yaml
   tags:

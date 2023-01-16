@@ -2,6 +2,8 @@
 # For optional roles
 containerd: False
 crio: True
+metallb: False
+ingress_nginx: False
 storage_class: False
 metrics_server: False
 prometheus: False

@@ -13,11 +13,6 @@
     create_namespace: true
     chart_ref: metallb/metallb
     update_repo_cache: true
-    values:
-      commonLabels:
-        pod-security.kubernetes.io/enforce: privileged
-        pod-security.kubernetes.io/audit: privileged
-        pod-security.kubernetes.io/warn: privileged
 
 - name: Create the directory for metallb
   become: yes
@@ -27,7 +22,7 @@
 
 - name: Wait graceful period for installing metallb
   pause:
-    seconds: 120
+    seconds: 30
 
 - name: Copy the l2conf.yaml
   become: yes
