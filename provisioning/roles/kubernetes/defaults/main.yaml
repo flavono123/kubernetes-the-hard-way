@@ -26,14 +26,14 @@ controlplane_node_hostname: "{{ groups['controlplane'][0] }}"
 controlplane_node_ip: "{{ hostvars[controlplane_node_hostname]['ansible_facts']['enp0s8']['ipv4']['address'] }}"
 
 # crio-o
-crio_version: "1.25"
+crio_version: "1.26"
 crio_os: "xUbuntu_{{ ansible_distribution_version }}"
 
 # crictl
-crictl_version: v1.25.0
+crictl_version: v1.26.0
 
 # kubeadm
-kube_version: 1.25.3
+kube_version: 1.26.0
 
 kube_apiserver_port: 6443
 kube_pod_network_cidr: 172.16.0.0/16
