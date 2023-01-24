@@ -1,18 +1,27 @@
-- name: Add metallb chart repo
-  become: yes
-  kubernetes.core.helm_repository:
-    name: metallb
-    repo_url: https://metallb.github.io/metallb
-
-
-- name: Install MetalLB release
-  become: yes
-  kubernetes.core.helm:
-    name: metallb
-    namespace: metallb-system
-    create_namespace: true
-    chart_ref: metallb/metallb
-    update_repo_cache: true
+#- name: Add metallb chart repo
+#  become: yes
+#  kubernetes.core.helm_repository:
+#    name: metallb
+#    repo_url: https://metallb.github.io/metallb
+#
+#- name: Delete MetalLB release
+#  become: yes
+#  kubernetes.core.helm:
+#    state: absent
+#    name: metallb
+#    namespace: metallb-system
+#    create_namespace: true
+#    chart_ref: metallb/metallb
+#    update_repo_cache: true
+#
+#- name: Install MetalLB release
+#  become: yes
+#  kubernetes.core.helm:
+#    name: metallb
+#    namespace: metallb-system
+#    create_namespace: true
+#    chart_ref: metallb/metallb
+#    update_repo_cache: true
 
 - name: Create the directory for metallb
   become: yes
@@ -20,9 +29,47 @@
     state: directory
     path: $HOME/metallb
 
+- name: Download MetalLB manifests
+  become: yes
+  get_url:
+    url: https://raw.githubusercontent.com/metallb/metallb/v0.13.7/config/manifests/metallb-native.yaml
+    dest: $HOME/metallb/metallb-native.yaml
+    mode: '0644'
+
+- name: Change webhook failure policies of MetalLB
+  become: yes
+  replace:
+    path: $HOME/metallb/metallb-native.yaml
+    regexp: 'failurePolicy: Fail'
+    replace: 'failurePolicy: Ignore'
+
+- name: Install MetalLB
+  become: yes
+  command: kubectl apply -f $HOME/metallb/metallb-native.yaml
+
+#      # - name: Wait till the deployment is created
+#   k8s_info:
+#     kind: Deployment
+#     wait: yes
+#     name: metallb-controller
+#     namespace: metallb-system
+#     wait_sleep: 30
+#     wait_timeout: 120
+#     kubeconfig: $HOME/.kube/config
+#
+# - name: Wait till the daemonset is created
+#   k8s_info:
+#     kind: DaemonSet
+#     wait: yes
+#     name: metallb-speaker
+#     namespace: metallb-system
+#     wait_sleep: 0
+#     wait_timeout: 120
+#     kubeconfig: $HOME/.kube/config
+
 - name: Wait graceful period for installing metallb
   pause:
-    seconds: 30
+    seconds: 40
 
 - name: Copy the l2conf.yaml
   become: yes

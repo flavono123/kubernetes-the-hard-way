@@ -1,5 +1,6 @@
 - hosts:
   - k8s
+  - mk8s
   - nk8s
   roles:
   - ansible_collection

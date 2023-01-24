@@ -12,3 +12,6 @@
     create_namespace: true
     chart_ref: ingress-nginx/ingress-nginx
     update_repo_cache: true
+#- name: Install ingress-nginx
+#  become: yes
+#  command: kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.5.1/deploy/static/provider/cloud/deploy.yaml

@@ -33,7 +33,7 @@ crio_os: "xUbuntu_{{ ansible_distribution_version }}"
 crictl_version: v1.26.0
 
 # kubeadm
-kube_version: 1.26.0
+kube_version: 1.26.1
 
 kube_apiserver_port: 6443
 kube_pod_network_cidr: 172.16.0.0/16

@@ -2,6 +2,7 @@
 
 INVENTORIES = %w[
   k8s
+  mk8s
   nk8s
 ]
 
