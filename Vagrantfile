@@ -4,6 +4,7 @@ INVENTORIES = %w[
   k8s
   mk8s
   nk8s
+  sk8s
 ]
 
 inventory = ENV['CLUSTER'] || INVENTORIES[0]

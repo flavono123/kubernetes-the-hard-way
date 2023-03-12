@@ -2,6 +2,7 @@
   - k8s
   - mk8s
   - nk8s
+  - sk8s
   roles:
   - ansible_collection
   - dns
