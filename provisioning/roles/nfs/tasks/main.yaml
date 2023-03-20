@@ -3,4 +3,6 @@
   tags:
   - nfs
   - nfs/configure
+  when:
+  - storage_class
 
