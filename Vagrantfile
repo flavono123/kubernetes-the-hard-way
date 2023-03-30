@@ -10,7 +10,7 @@ INVENTORIES = %w[
 inventory = ENV['CLUSTER'] || INVENTORIES[0]
 
 unless INVENTORIES.include? inventory
-  STDERR.puts "\e[31m#{inventory} should be one of the followings: #{INVENTORIES.join(', ')}\e[0m"
+  warn "\e[31m#{inventory} should be one of the followings: #{INVENTORIES.join(', ')}\e[0m"
   exit 1
 end
 
@@ -27,7 +27,7 @@ Vagrant.configure('2') do |config|
 
     master.vm.hostname = 'node-1'
     master.vm.network :private_network, ip: '192.168.1.2',
-      virtualbox__intnet: true
+                                        virtualbox__intnet: true
     master.vm.network :forwarded_port, guest: 22, host: 2222, id: 'ssh'
   end
 
@@ -40,7 +40,7 @@ Vagrant.configure('2') do |config|
 
     worker.vm.hostname = 'node-2'
     worker.vm.network :private_network, ip: '192.168.1.3',
-      virtualbox__intnet: true
+                                        virtualbox__intnet: true
     worker.vm.network :forwarded_port, guest: 22, host: 2223, id: 'ssh'
   end
 
@@ -53,7 +53,7 @@ Vagrant.configure('2') do |config|
 
     worker.vm.hostname = 'node-3'
     worker.vm.network :private_network, ip: '192.168.1.4',
-      virtualbox__intnet: true
+                                        virtualbox__intnet: true
     worker.vm.network :forwarded_port, guest: 22, host: 2224, id: 'ssh'
 
     # All VMs are up, after node-3 is up, provisioning the entire VMs at once
