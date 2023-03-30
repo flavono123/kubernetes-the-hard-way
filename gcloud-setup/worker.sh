@@ -22,6 +22,7 @@ KUBE_VERSION=1.26.1
 ### setup terminal
 apt-get update
 apt-get install -y bash-completion binutils
+echo 'source <(kubectl completion bash)' >> ~/.bashrc
 echo 'alias k=kubectl' >> ~/.bashrc
 echo 'alias c=clear' >> ~/.bashrc
 echo 'complete -F __start_kubectl k' >> ~/.bashrc
@@ -60,6 +61,14 @@ curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 mkdir -p /etc/apt/keyrings
 curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
+retries=5
+for _ in $(seq 1 $retries); do
+    if apt-get update; then
+        break
+    else
+      sleep 5
+    fi
+done
 apt-get update
 apt-get install -y docker.io containerd kubelet=${KUBE_VERSION}-00 kubeadm=${KUBE_VERSION}-00 kubectl=${KUBE_VERSION}-00 kubernetes-cni
 apt-mark hold kubelet kubeadm kubectl kubernetes-cni

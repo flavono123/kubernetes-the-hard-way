@@ -22,6 +22,7 @@ KUBE_VERSION=1.26.1
 ### setup terminal
 apt-get update
 apt-get install -y bash-completion binutils
+echo 'source <(kubectl completion bash)' >> ~/.bashrc
 echo 'alias k=kubectl' >> ~/.bashrc
 echo 'alias c=clear' >> ~/.bashrc
 echo 'complete -F __start_kubectl k' >> ~/.bashrc
@@ -60,7 +61,14 @@ curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 mkdir -p /etc/apt/keyrings
 curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-apt update
+retries=5
+for _ in $(seq 1 $retries); do
+    if apt-get update; then
+        break
+    else
+      sleep 5
+    fi
+done
 apt-get install -y docker.io containerd kubelet=${KUBE_VERSION}-00 kubeadm=${KUBE_VERSION}-00 kubectl=${KUBE_VERSION}-00 kubernetes-cni
 apt-mark hold kubelet kubeadm kubectl kubernetes-cni
 
@@ -183,20 +191,6 @@ tar xzf ${ETCDCTL_VERSION_FULL}.tar.gz ${ETCDCTL_VERSION_FULL}/etcdctl
 mv ${ETCDCTL_VERSION_FULL}/etcdctl /usr/bin/
 rm -rf ${ETCDCTL_VERSION_FULL} ${ETCDCTL_VERSION_FULL}.tar.gz
 
-### ingress-nginx
-helm upgrade --install ingress-nginx ingress-nginx \
-  -n ingress-nginx --create-namespace \
-  --repo https://kubernetes.github.io/ingress-nginx
-
-### metrics-server
-# helm upgrade --install metrics-server metrics-server \
-#   -n kube-system --create-namespace \
-#   --repo https://kubernetes-sigs.github.io/metrics-server
-
-### sc: local-path
-kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.22/deploy/local-path-storage.yaml
-kubectl annotate storageclass local-path storageclass.kubernetes.io/is-default-class=true
-
 ### nfs
 apt-get install -y nfs-kernel-server
 mkdir /nfs-storage
@@ -206,13 +200,6 @@ echo "/nfs-storage $(ip n | grep ens4 | awk '{ print $1 }' | sed -e 's/1$/0\/24/
 systemctl restart nfs-kernel-server
 apt-get install -y nfs-common
 
-### sc: nfs-subdir-external-provisioner
-helm upgrade --install nfs-provisioner nfs-subdir-external-provisioner \
-  -n nfs-provisioner --create-namespace \
-  --repo https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner \
-  --set nfs.path=/nfs-storage,nfs.server="$(ip addr show ens4 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)" \
-  --set nodeSelector."kubernetes\.io/hostname"="$(hostname)" \
-  --set tolerations[0].key="node-role.kubernetes.io/control-plane",tolerations[0].operator="Exists",tolerations[0].effect="NoSchedule"
 
 echo
 echo "### node-2에서 실행 ###"
