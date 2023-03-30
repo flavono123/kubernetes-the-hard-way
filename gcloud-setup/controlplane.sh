@@ -25,7 +25,7 @@ apt-get install -y bash-completion binutils
 echo 'alias k=kubectl' >> ~/.bashrc
 echo 'alias c=clear' >> ~/.bashrc
 echo 'complete -F __start_kubectl k' >> ~/.bashrc
-
+sed -i '1s/^/force_color_prompt=yes\n/' ~/.bashrc
 
 ### disable linux swap and remove any existing swap partitions
 swapoff -a
@@ -60,7 +60,7 @@ curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 mkdir -p /etc/apt/keyrings
 curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
 echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-apt-get update
+apt update
 apt-get install -y docker.io containerd kubelet=${KUBE_VERSION}-00 kubeadm=${KUBE_VERSION}-00 kubectl=${KUBE_VERSION}-00 kubernetes-cni
 apt-mark hold kubelet kubeadm kubectl kubernetes-cni
 
