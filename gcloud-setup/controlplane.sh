@@ -160,8 +160,15 @@ kubeadm init --kubernetes-version=${KUBE_VERSION} --ignore-preflight-errors=NumC
 mkdir -p ~/.kube
 sudo cp -i /etc/kubernetes/admin.conf ~/.kube/config
 
-### CNI
-kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
+### install helm
+curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
+sudo apt-get install apt-transport-https --yes
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
+sudo apt-get update
+sudo apt-get install helm
+
+### CNI (TODO: change to calico)
+kubectl apply -f https://raw.githubusercontent.com/flavono123/kubernetes-the-hard-way/main/gcloud-setup/flannel.yaml
 
 
 # etcdctl
