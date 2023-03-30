@@ -167,8 +167,11 @@ echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.
 sudo apt-get update
 sudo apt-get install helm
 
-### CNI (TODO: change to calico)
-kubectl apply -f https://raw.githubusercontent.com/flavono123/kubernetes-the-hard-way/main/gcloud-setup/flannel.yaml
+### CNI
+helm upgrade --install tigera-operator tigera-operator \
+  -n tigera-operator --create-namespace \
+  --repo https://projectcalico.docs.tigera.io/charts \
+  --values https://raw.githubusercontent.com/flavono123/kubernetes-the-hard-way/main/gcloud-setup/charts/calico/values.yaml
 
 
 # etcdctl
@@ -179,6 +182,37 @@ wget https://github.com/etcd-io/etcd/releases/download/${ETCDCTL_VERSION}/${ETCD
 tar xzf ${ETCDCTL_VERSION_FULL}.tar.gz ${ETCDCTL_VERSION_FULL}/etcdctl
 mv ${ETCDCTL_VERSION_FULL}/etcdctl /usr/bin/
 rm -rf ${ETCDCTL_VERSION_FULL} ${ETCDCTL_VERSION_FULL}.tar.gz
+
+### ingress-nginx
+helm upgrade --install ingress-nginx ingress-nginx \
+  -n ingress-nginx --create-namespace \
+  --repo https://kubernetes.github.io/ingress-nginx
+
+### metrics-server
+# helm upgrade --install metrics-server metrics-server \
+#   -n kube-system --create-namespace \
+#   --repo https://kubernetes-sigs.github.io/metrics-server
+
+### sc: local-path
+kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.22/deploy/local-path-storage.yaml
+kubectl annotate storageclass local-path storageclass.kubernetes.io/is-default-class=true
+
+### nfs
+apt-get install -y nfs-kernel-server
+mkdir /nfs-storage
+chmod 777 /nfs-storage
+chown nobody:nogroup /nfs-storage
+echo "/nfs-storage $(ip n | grep ens4 | awk '{ print $1 }' | sed -e 's/1$/0\/24/')(rw,sync,no_subtree_check,no_root_squash)" | sudo tee -a /etc/exports
+systemctl restart nfs-kernel-server
+apt-get install -y nfs-common
+
+### sc: nfs-subdir-external-provisioner
+helm upgrade --install nfs-provisioner nfs-subdir-external-provisioner \
+  -n nfs-provisioner --create-namespace \
+  --repo https://kubernetes-sigs.github.io/nfs-subdir-external-provisioner \
+  --set nfs.path=/nfs-storage,nfs.server="$(ip addr show ens4 | grep "inet\b" | awk '{print $2}' | cut -d/ -f1)" \
+  --set nodeSelector."kubernetes\.io/hostname"="$(hostname)" \
+  --set tolerations[0].key="node-role.kubernetes.io/control-plane",tolerations[0].operator="Exists",tolerations[0].effect="NoSchedule"
 
 echo
 echo "### node-2에서 실행 ###"

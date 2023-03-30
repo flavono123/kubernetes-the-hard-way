@@ -152,7 +152,8 @@ systemctl enable containerd
 systemctl restart containerd
 systemctl enable kubelet && systemctl start kubelet
 
-
+### nfs
+apt-get install -y nfs-kernel-server nfs-common
 
 ### init k8s
 kubeadm reset -f
