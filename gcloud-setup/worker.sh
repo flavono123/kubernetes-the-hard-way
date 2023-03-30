@@ -168,3 +168,9 @@ apt-get install -y nfs-kernel-server nfs-common
 kubeadm reset -f
 systemctl daemon-reload
 service kubelet start
+
+echo
+echo "controlplane에서 실행"
+echo "$ kubeadm token create --print-join-command --ttl 0"
+echo "출력된 명령을 여기(worker)에서 실행"
+echo
